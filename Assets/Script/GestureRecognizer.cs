@@ -153,22 +153,32 @@ public class GestureRecognizer : MonoBehaviour
         if (Input.GetMouseButtonUp(0) && isDrawing)
         {
             isDrawing = false; lineRenderer.positionCount = 0;
+            RecognizeManage recognizeManage = FindFirstObjectByType<RecognizeManage>();
             Debug.Log($"[GestureRecognizer] End drawing: raw pts={points.Count}");
-            if (points.Count < 10) { Debug.Log("Too few points"); return; }
+            if (points.Count < 10) 
+            { 
+                recognizeManage.RecognizeFail();
+                Debug.Log("Too few points"); return; 
+            }
             var candidate = ProcessPoints(points);
             Debug.Log($"Processed pts={candidate.Count}");
-            var res = recognizer.Recognize(candidate);
+            var res = recognizer.Recognize(candidate);            
             if (res.Match != null) Debug.Log($"Match={res.Match.Name}, Score={res.Score:F2}");
             else Debug.Log("No match");
             if (res.Match != null && res.Score >= ScoreThreshold)
             {
                 Debug.Log($"Invoke OnSpellRecognized: {res.Match.Name}");
                 OnSpellRecognized.Invoke(res.Match.Name);
+                recognizeManage.recognizedText.text = "인식된 도형\n" + (string) res.Match.Name;
+                recognizeManage.Recognized();
             }
-            else Debug.Log($"Failed or low score: {res.Score:F2} < {ScoreThreshold:F2}");
+            else 
+            {
+                recognizeManage.RecognizeFail();
+                Debug.Log($"Failed or low score: {res.Score:F2} < {ScoreThreshold:F2}");
+            }
         }
     }
-
     private List<Vector2> ProcessPoints(List<Vector2> raw)
     {
         Debug.Log($"Raw count: {raw.Count}");
