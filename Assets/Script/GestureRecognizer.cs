@@ -27,9 +27,10 @@ public class GestureRecognizer : MonoBehaviour
     {
         lineRenderer = gameObject.AddComponent<LineRenderer>();
         lineRenderer.positionCount = 0;
-        lineRenderer.widthMultiplier = 0.05f;
+        lineRenderer.widthMultiplier = 0.1f;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.useWorldSpace = true;
+        lineRenderer.numCapVertices = 10;
 
         recognizer = new DollarRecognizer();
         CreateTemplates();
