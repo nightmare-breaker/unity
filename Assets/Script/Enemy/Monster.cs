@@ -34,8 +34,8 @@ public abstract class Monster : MonoBehaviour {
     }
 
     protected virtual void Start() {
-        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-        navMeshAgent.speed = moveSpeed;
+        playerTransform = GameObject.FindGameObjectWithTag("Player").transform; // Player 태그를 가진 오브젝트 찾기
+        navMeshAgent.speed = moveSpeed; 
         ChangeState(MonsterState.Idle);
     }
 
@@ -108,31 +108,32 @@ public abstract class Monster : MonoBehaviour {
         
         switch (newState) {
             case MonsterState.Idle:
-                animator?.SetTrigger("Idle");
+                // animator?.SetTrigger("Idle");
                 navMeshAgent.isStopped = true;
                 break;
                 
             case MonsterState.Chase:
-                animator?.SetTrigger("Run");
+                // animator?.SetTrigger("Run");
                 navMeshAgent.isStopped = false;
                 break;
                 
             case MonsterState.Attack:
-                animator?.SetTrigger("Attack");
+                // animator?.SetTrigger("Attack");
                 navMeshAgent.isStopped = true;
                 break;
                 
             case MonsterState.Hit:
-                animator?.SetTrigger("Hit");
+                // animator?.SetTrigger("Hit");
                 navMeshAgent.isStopped = true;
                 break;
                 
             case MonsterState.Die:
-                animator?.SetTrigger("Die");
+                // animator?.SetTrigger("Die");
                 navMeshAgent.isStopped = true;
                 // 콜라이더 비활성화
-                if (GetComponent<Collider>())
+                if (GetComponent<Collider>()) {
                     GetComponent<Collider>().enabled = false;
+                }
                 
                 // NavMeshAgent 비활성화
                 navMeshAgent.enabled = false;
@@ -151,9 +152,8 @@ public abstract class Monster : MonoBehaviour {
 
     // 데미지 받기
     public virtual void TakeDamage(float damage) {
-        if (currentState == MonsterState.Die)
-            return;
-            
+        if (currentState == MonsterState.Die) return;
+
         currentHealth -= damage;
         
         // 사망 체크

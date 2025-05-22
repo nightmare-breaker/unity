@@ -8,10 +8,9 @@ public class Bat : Monster {
     
     protected override void Awake() {
         base.Awake();
-        
-        // 박쥐 기본 스탯 설정
+
+        // Bat 스탯 설정
         monsterName = "Bat";
-        maxHealth = 50f;
         attackDamage = 10f;
         moveSpeed = 4f;
         attackSpeed = 1.5f;
@@ -72,12 +71,11 @@ public class Bat : Monster {
     }
     
     protected override void PerformAttack() {
-        animator?.SetTrigger("Attack");
+        // animator?.SetTrigger("Attack");
         
         // 플레이어에게 데미지
         if (playerTransform != null) {
-            PlayerHealth playerHealth = playerTransform.GetComponent<PlayerHealth>();
-            if (playerHealth != null) {
+            if (playerTransform.TryGetComponent<PlayerHealth>(out var playerHealth)) {
                 playerHealth.TakeDamage(attackDamage);
             }
         }

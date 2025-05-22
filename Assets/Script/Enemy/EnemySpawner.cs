@@ -3,38 +3,45 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour {
-    public GameObject[] enemyPrefabs;
-    public Transform[] spawnPoints;
-    public float spawnRadius = 10f; // 스폰 반경
-    public int maxEnemiesAtOnce = 5; // 최대 동시 출현 몬스터 수
-    public float spawnInterval = 1f; // 스폰 간격
+    [Header("Spawn Settings")]
+    [SerializeField] private GameObject[] enemyPrefabs;
+    [SerializeField] private Transform[] spawnPoints;
+    [SerializeField] private float spawnRadius = 10f; // 스폰 반경
+    [SerializeField] private int maxEnemiesAtOnce = 5; // 최대 동시 출현 몬스터 수
+    [SerializeField] private float spawnInterval = 1f; // 스폰 간격
+
+    private WaitForSeconds spawnWait;
+    private Coroutine spawnRoutine;
     
     // 웨이브 관련 변수
-    private List<GameObject> currentWaveEnemies = new List<GameObject>();
+    [Header("Wave Settings")]
+    private readonly List<GameObject> currentWaveEnemies = new();
     private bool isWaveActive = false; // 현재 웨이브 활성화 상태
-    private System.Action onWaveDefeated; // 웨이브 처치 콜백
+    private System.Action onWaveDefeated;
+
+
     
     private void Awake() {
-        // 스폰 포인트가 설정되지 않았으면 자신의 위치 사용
-        if (spawnPoints == null || spawnPoints.Length == 0) {
-            spawnPoints = new Transform[1] { transform };
-        }
+        spawnWait = new WaitForSeconds(spawnInterval);
+
+        if (spawnPoints == null || spawnPoints.Length == 0)
+            spawnPoints = new[] { transform };
     }
     
-    private void OnEnable() {
-        // 몬스터 사망 이벤트 등록
-        Monster.OnMonsterDeath += HandleMonsterDeath;
-    }
-    
+    private void OnEnable() => Monster.OnMonsterDeath += HandleMonsterDeath; // 몬스터 사망 이벤트 등록
     private void OnDisable() {
         // 몬스터 사망 이벤트 해제
         Monster.OnMonsterDeath -= HandleMonsterDeath;
+        if (spawnRoutine != null) StopCoroutine(spawnRoutine);
+        isWaveActive = false;
     }
     
     // 몬스터 사망 처리
-    private void HandleMonsterDeath(Monster monster) { 
+    private void HandleMonsterDeath(Monster monster)
+    {
         // 현재 웨이브에서 사망한 몬스터 제거
-        if (currentWaveEnemies.Contains(monster.gameObject)) {
+        if (currentWaveEnemies.Contains(monster.gameObject))
+        {
             currentWaveEnemies.Remove(monster.gameObject);
             CheckWaveStatus(); // 웨이브의 모든 몬스터가 처치되었는지 확인
         }
@@ -61,21 +68,22 @@ public class EnemySpawner : MonoBehaviour {
         // 이전 웨이브가 활성화 상태면 중단
         if (isWaveActive) return;
 
+        // 스폰할 프리팹 설정
+        var spawnPrefabs = (prefabs?.Length > 0 ? prefabs : enemyPrefabs);
+        if (spawnPrefabs == null || spawnPrefabs.Length == 0) {
+            Debug.LogError("EnemySpawner: No prefabs to spawn!");
+            return;
+        }
+
         // 웨이브 처치 콜백 저장
         onWaveDefeated = onDefeated;
         
         // 새 웨이브 시작
         isWaveActive = true;
         currentWaveEnemies.Clear();
-        
-        // 스폰할 프리팹 설정
-        GameObject[] spawnPrefabs = prefabs;
-        if (spawnPrefabs == null || spawnPrefabs.Length == 0) {
-            spawnPrefabs = enemyPrefabs;
-        }
-        
+
         // 적 스폰 시작
-        StartCoroutine(SpawnEnemiesRoutine(spawnPrefabs, count));
+        spawnRoutine = StartCoroutine(SpawnEnemiesRoutine(spawnPrefabs, count));
     }
     
     // 웨이브 활성화 상태 반환
@@ -84,10 +92,10 @@ public class EnemySpawner : MonoBehaviour {
     }
     
     // 적 스폰 코루틴
-    private IEnumerator SpawnEnemiesRoutine(GameObject[] prefabs, int count) {
+    private IEnumerator SpawnEnemiesRoutine(GameObject[] prefabs, int total) {
         int spawned = 0;
         
-        while (spawned < count) {
+        while (spawned < total && isWaveActive) {
             // 최대 동시 출현 몬스터 수 제한
             if (currentWaveEnemies.Count < maxEnemiesAtOnce) {
                 // 랜덤 적 프리팹 선택
@@ -104,7 +112,7 @@ public class EnemySpawner : MonoBehaviour {
                 spawned++;
             }
             
-            yield return new WaitForSeconds(spawnInterval);
+            yield return spawnWait; // 스폰 간격 대기
         }
     }
     

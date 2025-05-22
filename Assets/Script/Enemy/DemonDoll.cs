@@ -18,6 +18,7 @@ public class DemonDoll : Monster {
     private EnemySpawner spawner;
     private int currentWave = 0;
     private float lastThrowTime;
+    private bool finalPhaseStarted = false;   // 마지막 패턴이 이미 발동했는지
     
     // 상태 관련
     public enum BossPhase { Phase1, Phase2, Phase3 }
@@ -69,27 +70,34 @@ public class DemonDoll : Monster {
     
     // 다음 웨이브 시작
     public void StartNextWave() {
-        if (currentWave < maxWaves) {
-            currentWave++;
+        // 모든 웨이브를 소모한 뒤면 바로 빠져나옴
+        if (currentWave >= maxWaves) {
+            Debug.Log("All waves cleared. Switching to final phase.");
+            BeginFinalPhase();   // ← 전용 메서드 호출
+            return;
             
+        } else if (currentWave < maxWaves) {
+            currentWave++;
+
             // 페이즈에 따라 웨이브의 몬스터 종류/수 조정
             List<GameObject> wavePrefabs = new List<GameObject>();
             int monstersCount = monsterPerWave;
-            
-            switch (currentPhase) {
+
+            switch (currentPhase)
+            {
                 case BossPhase.Phase1:
                     // 첫 페이즈는 슬라임만
                     monstersCount = Mathf.RoundToInt(monsterPerWave * 1.0f);
                     wavePrefabs.Add(Resources.Load<GameObject>("Prefabs/Monsters/Slime"));
                     break;
-                    
+
                 case BossPhase.Phase2:
                     // 두 번째 페이즈는 슬라임과 박쥐
                     monstersCount = Mathf.RoundToInt(monsterPerWave * 1.2f);
                     wavePrefabs.Add(Resources.Load<GameObject>("Prefabs/Monsters/Slime"));
                     wavePrefabs.Add(Resources.Load<GameObject>("Prefabs/Monsters/Bat"));
                     break;
-                    
+
                 case BossPhase.Phase3:
                     // 세 번째 페이즈는 모든 몬스터
                     monstersCount = Mathf.RoundToInt(monsterPerWave * 1.5f);
@@ -98,7 +106,7 @@ public class DemonDoll : Monster {
                     wavePrefabs.Add(Resources.Load<GameObject>("Prefabs/Monsters/Ghost"));
                     break;
             }
-            
+
             // 웨이브 생성
             spawner.SpawnWave(wavePrefabs.ToArray(), monstersCount, OnWaveDefeated);
         }
@@ -114,7 +122,7 @@ public class DemonDoll : Monster {
     private IEnumerator GroggyRoutine() {
         // 그로기 상태로 전환
         isGroggy = true;
-        animator?.SetBool("Groggy", true);
+        // animator?.SetBool("Groggy", true);
         navMeshAgent.isStopped = true;
         
         Debug.Log($"Boss entered groggy state for {groggyDuration} seconds");
@@ -124,23 +132,47 @@ public class DemonDoll : Monster {
         
         // 그로기 상태 해제
         isGroggy = false;
-        animator?.SetBool("Groggy", false);
+        // animator?.SetBool("Groggy", false);
         navMeshAgent.isStopped = false;
         
         Debug.Log("Boss recovered from groggy state");
-        
-        // 다음 웨이브 시작
-        StartNextWave();
+        // animator?.SetBool("Groggy", false);
+        if (currentWave >= maxWaves) {
+            BeginFinalPhase();      // 더 소환할 웨이브가 없으면 최종 패턴
+        } else {
+            StartNextWave();        // 아직 남았으면 다음 웨이브
+        }
     }
+
+    private void BeginFinalPhase() {
+        // 이미 한 번 발동했다면 재호출 차단
+        if (finalPhaseStarted) return;
+        finalPhaseStarted = true;
+
+        // 스포너 정지하고 보스랑 1:1 대결
+        if (spawner != null) spawner.enabled = false;
+
+        // 보스 능력치 조정?
+        currentPhase = BossPhase.Phase3;   // 확실히 마지막 페이즈로 고정
+        attackDamage *= 2f;
+        attackSpeed  *= 1.5f;
+        throwCooldown *= 0.5f;
+
+    Debug.Log("Boss has entered the FINAL phase!");
+}
     
     // 페이즈 체크
-    private void CheckPhaseChange() {
+    private void CheckPhaseChange()
+    {
         float healthPercentage = currentHealth / maxHealth;
-        
-        if (healthPercentage <= 0.3f && currentPhase != BossPhase.Phase3) {
+
+        if (healthPercentage <= 0.3f && currentPhase != BossPhase.Phase3)
+        {
             currentPhase = BossPhase.Phase3;
             OnPhaseChange();
-        } else if (healthPercentage <= 0.6f && currentPhase != BossPhase.Phase3 && currentPhase != BossPhase.Phase2) {
+        }
+        else if (healthPercentage <= 0.6f && currentPhase != BossPhase.Phase3 && currentPhase != BossPhase.Phase2)
+        {
             currentPhase = BossPhase.Phase2;
             OnPhaseChange();
         }
@@ -154,14 +186,14 @@ public class DemonDoll : Monster {
                 attackDamage *= 1.2f;
                 attackSpeed *= 1.2f;
                 throwCooldown *= 0.8f;
-                animator?.SetTrigger("PhaseChange");
+                //animator?.SetTrigger("PhaseChange");
                 break;
                 
             case BossPhase.Phase3:
                 attackDamage *= 1.5f;
                 attackSpeed *= 1.3f;
                 throwCooldown *= 0.6f;
-                animator?.SetTrigger("PhaseChange");
+                //animator?.SetTrigger("PhaseChange");
                 break;
         }
         
@@ -170,7 +202,7 @@ public class DemonDoll : Monster {
     
     // 기본 공격 수행
     protected override void PerformAttack() {
-        animator?.SetTrigger("Attack");
+        // animator?.SetTrigger("Attack");
         
         // 플레이어에게 데미지
         if (playerTransform != null && Vector3.Distance(transform.position, playerTransform.position) <= attackRange) {
@@ -185,23 +217,24 @@ public class DemonDoll : Monster {
     private void PerformThrowAttack() {
         if (projectilePrefab == null || projectileSpawnPoint == null)
             return;
-            
-        animator?.SetTrigger("Throw");
-        
+
+        // animator?.SetTrigger("Throw");
+
         // 플레이어 방향으로 투사체 발사
         if (playerTransform != null) {
             GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
             Projectile projectileComponent = projectile.GetComponent<Projectile>();
             
             if (projectileComponent != null) {
-                projectileComponent.Launch(playerTransform.position - projectileSpawnPoint.position, attackDamage * 0.7f);
+                projectileComponent.Launch(playerTransform.position - projectileSpawnPoint.position, attackDamage);
             } else {
                 // Projectile 컴포넌트가 없으면 기본 발사 로직
                 Rigidbody projRb = projectile.GetComponent<Rigidbody>();
+
                 if (projRb != null) {
                     Vector3 direction = (playerTransform.position - projectileSpawnPoint.position).normalized;
                     projRb.AddForce(direction * 20f, ForceMode.Impulse);
-                    
+
                     // 10초 후 파괴
                     Destroy(projectile, 10f);
                 }

@@ -1,3 +1,7 @@
+// 임시 파일로 사용 중
+// 합치는 과정에서 따로 제작하신 Player로 대체해야 함
+
+
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;

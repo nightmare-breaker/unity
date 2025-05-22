@@ -5,9 +5,8 @@ public class Ghost : Monster {
     protected override void Awake() {
         base.Awake();
         
-        // 기본 스탯 설정
+        // Ghost 스탯 설정
         monsterName = "Ghost";
-        maxHealth = 75f;
         attackDamage = 12f;
         moveSpeed = 3.5f;
         attackSpeed = 1.2f;
@@ -19,12 +18,12 @@ public class Ghost : Monster {
     }
     
     protected override void PerformAttack() {
-        animator?.SetTrigger("Attack");
+        // animator?.SetTrigger("Attack");
         
-        // 플레이어에게 데미지
-        if (playerTransform != null) {
-            PlayerHealth playerHealth = playerTransform.GetComponent<PlayerHealth>();
-            if (playerHealth != null) {
+        // 일반 공격
+        if (playerTransform != null && Vector3.Distance(transform.position, playerTransform.position) <= attackRange) {
+            
+            if (playerTransform.TryGetComponent<PlayerHealth>(out var playerHealth)) {
                 playerHealth.TakeDamage(attackDamage);
             }
         }

@@ -23,7 +23,7 @@ public class Projectile : MonoBehaviour {
     
     private void OnTriggerEnter(Collider other) {
         if (other.CompareTag("Player")) {
-            // 플레이어와 충돌했을 때 처리, 임시로 사용중인 Player 관련 스크립트, 차후 수정
+            // 플레이어와 충돌했을 때
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
 
             if (playerHealth != null) {
@@ -33,7 +33,7 @@ public class Projectile : MonoBehaviour {
             Destroy(gameObject); // 투사체 파괴
             
         } else if (other.CompareTag("Ground") || other.CompareTag("Wall")) {
-            // 바닥이나 벽과 충돌했을 때 처리
+            // 바닥이나 벽과 충돌했을 때
             Destroy(gameObject); // 투사체 파괴
         }
     }

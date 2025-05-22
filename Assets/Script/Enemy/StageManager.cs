@@ -7,16 +7,20 @@ public class StageManager : MonoBehaviour {
     public DemonDoll bossPrefab;
     public float bossActivationDelay = 3f;
     public EnemySpawner mainSpawner;
+    private int remainingMobCount;
     
     // 스테이지 상태
     private bool isBossActivated = false;
     private bool isInitialWaveActive = false;
     
     private void Start() {
+        // 몬스터 사망 이벤트 등록
+        Monster.OnMonsterDeath += HandleMonsterDeath;
+        
         // 메인 스포너가 없으면 찾기
         if (mainSpawner == null) {
             mainSpawner = GetComponent<EnemySpawner>();
-            
+
             if (mainSpawner == null) {
                 mainSpawner = gameObject.AddComponent<EnemySpawner>();
             }
@@ -34,19 +38,21 @@ public class StageManager : MonoBehaviour {
         if (bossPrefab != null) {
             bossPrefab.gameObject.SetActive(false);
         }
-        
+
+        if (initialEnemyPrefabs == null || initialEnemyPrefabs.Length == 0) {
+            Debug.LogError("No initial enemy prefabs assigned!");
+            return;
+        }
+
         // 초기 웨이브 시작
+        remainingMobCount = initialEnemyCount;
         StartInitialWave();
-        
-        // 몬스터 사망 이벤트 등록
-        Monster.OnMonsterDeath += HandleMonsterDeath;
     }
     
-    private void OnDestroy() {
-        // 몬스터 사망 이벤트 해제
-        Monster.OnMonsterDeath -= HandleMonsterDeath;
-    }
+    private void OnDisable()  => Monster.OnMonsterDeath -= HandleMonsterDeath;
     
+    private void OnDestroy() => Monster.OnMonsterDeath -= HandleMonsterDeath; // 몬스터 사망 이벤트 해제
+
     // 초기 웨이브 시작
     private void StartInitialWave() {
         isInitialWaveActive = true;
@@ -55,31 +61,16 @@ public class StageManager : MonoBehaviour {
     
     // 몬스터 사망 처리
     private void HandleMonsterDeath(Monster monster) {
-        CheckBossActivationCondition(); // 보스 활성화 조건 체크
-    }
-    
-    // 보스 스폰 조건 체크
-    private void CheckBossActivationCondition() {
-        // 이미 보스가 소환되었으면 패스
-        if (isBossActivated) return;
-        
-        // 필드의 모든 몬스터 카운트
-        Monster[] activeMonsters = FindObjectsByType<Monster>(FindObjectsSortMode.None);
-        int mobCount = 0;
-        
-        foreach (Monster monster in activeMonsters) {
-            if (!(monster is DemonDoll)) {
-                mobCount++;
+        // DemonDoll 는 일반 몹 카운트에 포함하지 않음
+        if (monster is not DemonDoll && isInitialWaveActive) // 보스 활성화 조건 체크
+        {
+            remainingMobCount--;
+            if (remainingMobCount <= 0) {
+                StartCoroutine(ActivateBossWithDelay());
             }
         }
-        
-        // 남은 몬스터가 없으면 보스 활성화
-        if (mobCount == 0 && isInitialWaveActive) {
-            isInitialWaveActive = false;
-            StartCoroutine(ActivateBossWithDelay());
-        }
     }
-    
+
     // 보스 스폰 코루틴
     private IEnumerator ActivateBossWithDelay() {
         Debug.Log("All monsters defeated. Activating boss in " + bossActivationDelay + " seconds...");
