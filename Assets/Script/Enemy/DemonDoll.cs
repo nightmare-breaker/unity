@@ -26,6 +26,7 @@ public class DemonDoll : Monster {
     
     protected override void Awake() {
         base.Awake();
+        canMove = false;
         
         //기본 스탯 설정
         monsterName = "Demon Doll";
@@ -88,22 +89,22 @@ public class DemonDoll : Monster {
                 case BossPhase.Phase1:
                     // 첫 페이즈는 슬라임만
                     monstersCount = Mathf.RoundToInt(monsterPerWave * 1.0f);
-                    wavePrefabs.Add(Resources.Load<GameObject>("Prefabs/Monsters/Slime"));
+                    wavePrefabs.Add(Resources.Load<GameObject>("Assets/Prefabs/Enemy/Level 1 Monster Pack/Models/Slime_Level_1.fbx"));
                     break;
 
                 case BossPhase.Phase2:
                     // 두 번째 페이즈는 슬라임과 박쥐
                     monstersCount = Mathf.RoundToInt(monsterPerWave * 1.2f);
-                    wavePrefabs.Add(Resources.Load<GameObject>("Prefabs/Monsters/Slime"));
-                    wavePrefabs.Add(Resources.Load<GameObject>("Prefabs/Monsters/Bat"));
+                    wavePrefabs.Add(Resources.Load<GameObject>("Assets/Prefabs/Enemy/Level 1 Monster Pack/Models/Slime_Level_1.fbx"));
+                    wavePrefabs.Add(Resources.Load<GameObject>("Assets/Prefabs/Enemy/Level 1 Monster Pack/Models/Bat_Level_1.fbx"));
                     break;
-
+    
                 case BossPhase.Phase3:
                     // 세 번째 페이즈는 모든 몬스터
                     monstersCount = Mathf.RoundToInt(monsterPerWave * 1.5f);
-                    wavePrefabs.Add(Resources.Load<GameObject>("Prefabs/Monsters/Slime"));
-                    wavePrefabs.Add(Resources.Load<GameObject>("Prefabs/Monsters/Bat"));
-                    wavePrefabs.Add(Resources.Load<GameObject>("Prefabs/Monsters/Ghost"));
+                    wavePrefabs.Add(Resources.Load<GameObject>("Assets/Prefabs/Enemy/Level 1 Monster Pack/Models/Slime_Level_1.fbx"));
+                    wavePrefabs.Add(Resources.Load<GameObject>("Assets/Prefabs/Enemy/Level 1 Monster Pack/Models/Bat_Level_1.fbx"));
+                    wavePrefabs.Add(Resources.Load<GameObject>("Assets/Prefabs/Enemy/Level 1 Monster Pack/Models/Ghost_Level_1.fbx"));
                     break;
             }
 
@@ -123,7 +124,7 @@ public class DemonDoll : Monster {
         // 그로기 상태로 전환
         isGroggy = true;
         // animator?.SetBool("Groggy", true);
-        navMeshAgent.isStopped = true;
+        // navMeshAgent.isStopped = true;
         
         Debug.Log($"Boss entered groggy state for {groggyDuration} seconds");
         
@@ -133,7 +134,7 @@ public class DemonDoll : Monster {
         // 그로기 상태 해제
         isGroggy = false;
         // animator?.SetBool("Groggy", false);
-        navMeshAgent.isStopped = false;
+        // navMeshAgent.isStopped = false;
         
         Debug.Log("Boss recovered from groggy state");
         // animator?.SetBool("Groggy", false);

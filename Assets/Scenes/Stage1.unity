@@ -305,7 +305,10 @@ MonoBehaviour:
   - {fileID: 1014462601}
   - {fileID: 235668193}
   - {fileID: 759127917}
-  spawnPoints: []
+  spawnPoints:
+  - {fileID: 1478518019}
+  - {fileID: 653763054}
+  - {fileID: 1875228502}
   spawnRadius: 10
   maxEnemiesAtOnce: 5
   spawnInterval: 1
@@ -317,8 +320,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 82734657}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -375.717, y: 57.38166, z: 1798.8177}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -375.71698, y: 57.381657, z: 1798.8177}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1312,7 +1315,7 @@ GameObject:
   - component: {fileID: 250114943}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3421,8 +3424,8 @@ MonoBehaviour:
   moveSpeed: 3
   detectionRange: 10
   attackRange: 2
-  expReward: 10
   currentState: 0
+  canMove: 1
 --- !u!195 &653763056
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -5722,6 +5725,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1080306328}
   m_CullTransparentMesh: 1
+--- !u!1 &1104581115 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4994990578093367012, guid: efad73cbd909d46f09ffe6746c247b92, type: 3}
+  m_PrefabInstance: {fileID: 2660622088547688886}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1114717744
 GameObject:
   m_ObjectHideFlags: 0
@@ -6706,6 +6714,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b9527748312271d4e8616ee3d2242a88, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1305692308}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b9527748312271d4e8616ee3d2242a88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1305692309}
   m_SourcePrefab: {fileID: 100100000, guid: b9527748312271d4e8616ee3d2242a88, type: 3}
 --- !u!4 &1305692306 stripped
 Transform:
@@ -6730,24 +6741,46 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   monsterName: DemonDoll
-  maxHealth: 100
-  currentHealth: 0
+  maxHealth: 10000
+  currentHealth: 6000
   attackDamage: 10
   attackSpeed: 1
   moveSpeed: 3
   detectionRange: 10
   attackRange: 2
-  expReward: 10
   currentState: 0
+  canMove: 0
   throwAttackRange: 10
   throwCooldown: 3
-  projectilePrefab: {fileID: 0}
-  projectileSpawnPoint: {fileID: 0}
+  projectilePrefab: {fileID: 1104581115}
+  projectileSpawnPoint: {fileID: 2660622088547688887}
   maxWaves: 3
   monsterPerWave: 5
   groggyDuration: 8
   isGroggy: 0
   currentPhase: 0
+--- !u!195 &1305692309
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1305692307}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &1334117770
 GameObject:
   m_ObjectHideFlags: 0
@@ -7371,8 +7404,8 @@ MonoBehaviour:
   moveSpeed: 3
   detectionRange: 10
   attackRange: 2
-  expReward: 10
   currentState: 0
+  canMove: 1
   flyHeight: 2
   hoverRadius: 3
 --- !u!195 &1478518021
@@ -8047,11 +8080,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 317bc50b9b79142b0af91dcc37e2e4a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialEnemyPrefabs: []
+  initialEnemyPrefabs:
+  - {fileID: 1014462601}
+  - {fileID: 235668193}
+  - {fileID: 759127917}
   initialEnemyCount: 8
-  bossPrefab: {fileID: 0}
-  bossSpawnPoint: {fileID: 0}
-  bossSpawnDelay: 3
+  bossPrefab: {fileID: 1305692308}
+  bossActivationDelay: 3
   mainSpawner: {fileID: 82734658}
 --- !u!4 &1536791844
 Transform:
@@ -9517,8 +9552,8 @@ MonoBehaviour:
   moveSpeed: 3
   detectionRange: 10
   attackRange: 2
-  expReward: 10
   currentState: 0
+  canMove: 1
 --- !u!195 &1875228504
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -10150,6 +10185,70 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4d9a3b35b3bc07649b697df7fb497b6d, type: 3}
+--- !u!1 &2018129352
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2018129354}
+  - component: {fileID: 2018129353}
+  m_Layer: 0
+  m_Name: NavMesh Surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2018129353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2018129352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: e0daca6d60a794e50bd91593b34e0310, type: 2}
+  m_BuildHeightMesh: 0
+--- !u!4 &2018129354
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2018129352}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 450.11087, y: 400.6215, z: -18.153038}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2028381746
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10767,4 +10866,5 @@ SceneRoots:
   - {fileID: 1947614087}
   - {fileID: 1891133049}
   - {fileID: 1536791844}
+  - {fileID: 2018129354}
   - {fileID: 82734659}

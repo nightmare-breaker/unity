@@ -69,7 +69,7 @@ public class EnemySpawner : MonoBehaviour {
         if (isWaveActive) return;
 
         // 스폰할 프리팹 설정
-        var spawnPrefabs = (prefabs?.Length > 0 ? prefabs : enemyPrefabs);
+        var spawnPrefabs = prefabs?.Length > 0 ? prefabs : enemyPrefabs;
         if (spawnPrefabs == null || spawnPrefabs.Length == 0) {
             Debug.LogError("EnemySpawner: No prefabs to spawn!");
             return;

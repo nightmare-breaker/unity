@@ -18,6 +18,7 @@ public abstract class Monster : MonoBehaviour {
     // 필요한 컴포넌트
     protected Animator animator;
     protected NavMeshAgent navMeshAgent;
+    [SerializeField] protected bool canMove = true;
     protected Transform playerTransform;
     
     // 타이머 변수
@@ -40,6 +41,9 @@ public abstract class Monster : MonoBehaviour {
     }
 
     protected virtual void Update() {
+        if (!canMove) return;
+        if (navMeshAgent == null) return;
+
         if (currentState == MonsterState.Die) return;
             
         switch (currentState) {
